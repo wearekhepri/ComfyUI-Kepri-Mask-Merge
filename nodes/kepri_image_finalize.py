@@ -191,18 +191,13 @@ class KepriImageFinalize:
                 bg = torch.zeros((B, target_h, target_w, 3), dtype=torch.float32, device=dev)
             else:
                 bg = background_image.to(dev)
-                # resize background to target if needed
-                if bg.shape[1:3] != (target_h, target_w):
-                    bg = (
-                        torch.nn.functional.interpolate(
-                            bg.permute(0, 3, 1, 2),
-                            size=(target_h, target_w),
-                            mode="bicubic",
-                            align_corners=False,
-                        )
-                        .permute(0, 2, 3, 1)
-                        .clamp(0.0, 1.0)
-                    )
+                # Strip alpha if present so both RGB and RGBA presets work.
+                if bg.shape[-1] == 4:
+                    bg = bg[..., :3]
+                # Apply the same geometric pipeline as the main image:
+                # resize by longest edge, then crop / pad to the exact target.
+                bg, _, bg_h, bg_w = self._resize_longest(bg, None, longest_edge)
+                bg, _ = self._crop_or_pad(bg, None, target_h, target_w)
                 # match batch size
                 if bg.shape[0] < B:
                     bg = bg.repeat(B, 1, 1, 1)

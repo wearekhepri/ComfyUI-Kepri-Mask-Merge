@@ -1,4 +1,4 @@
-# ComfyUI-Kepri-Mask-Merge
+# ComfyUI-Kepri-Nodes-Pack
 
 A lightweight ComfyUI custom-node pack for the **Kepri Background Removal V2** pipeline. Contains two nodes:
 
@@ -70,7 +70,7 @@ One-stop finalisation after background removal. Replaces the old chain `ImageRes
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/wearekhepri/ComfyUI-Kepri-Mask-Merge.git
+git clone https://github.com/wearekhepri/comfyui-kepri-nodes-pack.git
 ```
 
 Restart ComfyUI and refresh the browser. Both nodes appear under **Kepri/Background**.
@@ -143,7 +143,7 @@ To verify registration after install:
 ## File Structure
 
 ```
-ComfyUI-Kepri-Mask-Merge/
+comfyui-kepri-nodes-pack/
 ├── README.md
 ├── __init__.py              # ComfyUI registration (imports all nodes)
 └── nodes/

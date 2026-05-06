@@ -125,6 +125,32 @@ class KepriImageFinalize:
 
         return img, msk
 
+    @staticmethod
+    def _resize_cover(img, target_h, target_w):
+        """Resize *img* so it completely covers (target_h, target_w).
+
+        The image is scaled uniformly until the smallest dimension matches
+        the target, then the excess is center-cropped.  No black bars.
+        img: [B, H, W, C].  Returns [B, target_h, target_w, C].
+        """
+        B, H, W, C = img.shape
+        scale = max(target_w / W, target_h / H)
+        new_w = int(round(W * scale))
+        new_h = int(round(H * scale))
+        img = (
+            torch.nn.functional.interpolate(
+                img.permute(0, 3, 1, 2),
+                size=(new_h, new_w),
+                mode="bicubic",
+                align_corners=False,
+            )
+            .permute(0, 2, 3, 1)
+            .clamp(0.0, 1.0)
+        )
+        y0 = (new_h - target_h) // 2
+        x0 = (new_w - target_w) // 2
+        return img[:, y0 : y0 + target_h, x0 : x0 + target_w, :]
+
     # ------------------------------------------------------------------ #
     def finalize(
         self,
@@ -194,10 +220,9 @@ class KepriImageFinalize:
                 # Strip alpha if present so both RGB and RGBA presets work.
                 if bg.shape[-1] == 4:
                     bg = bg[..., :3]
-                # Apply the same geometric pipeline as the main image:
-                # resize by longest edge, then crop / pad to the exact target.
-                bg, _, bg_h, bg_w = self._resize_longest(bg, None, longest_edge)
-                bg, _ = self._crop_or_pad(bg, None, target_h, target_w)
+                # Zoom to cover — scale uniformly until the smallest dimension
+                # matches the target, then center-crop the excess.  No black bars.
+                bg = self._resize_cover(bg, target_h, target_w)
                 # match batch size
                 if bg.shape[0] < B:
                     bg = bg.repeat(B, 1, 1, 1)

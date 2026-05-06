@@ -145,8 +145,10 @@ To verify registration after install:
 ```
 ComfyUI-Kepri-Mask-Merge/
 ├── README.md
-├── __init__.py          # ComfyUI registration
-└── nodes.py             # KepriMaskMerge + KepriImageFinalize
+├── __init__.py              # ComfyUI registration (imports all nodes)
+└── nodes/
+    ├── kepri_mask_merge.py    # KepriMaskMerge — multi-object mask union
+    └── kepri_image_finalize.py # KepriImageFinalize — resize + crop/pad + background
 ```
 
 ---

@@ -1,9 +1,14 @@
-import os
-import sys
+from .nodes.kepri_mask_merge import KepriMaskMerge
+from .nodes.kepri_image_finalize import KepriImageFinalize
 
-# Add the custom node directory to the path if needed
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+NODE_CLASS_MAPPINGS = {
+    "KepriMaskMerge": KepriMaskMerge,
+    "KepriImageFinalize": KepriImageFinalize,
+}
 
-from .nodes import NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "KepriMaskMerge": "Kepri Mask Merge (Multi-Object → 1 BBox)",
+    "KepriImageFinalize": "Kepri Image Finalize (Resize + Crop/Pad + Bg)",
+}
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']

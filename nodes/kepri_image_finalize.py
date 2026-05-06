@@ -139,6 +139,12 @@ class KepriImageFinalize:
         dev = image.device
         B, H, W, C = image.shape
 
+        # Strip alpha if present (RMBG outputs RGBA [B,H,W,4]).
+        # The alpha is carried separately by the mask input.
+        if C == 4:
+            image = image[..., :3]
+            C = 3
+
         # -- 1. resize by longest edge --------------------------------- #
         img, msk, new_h, new_w = self._resize_longest(image, mask, longest_edge)
 
